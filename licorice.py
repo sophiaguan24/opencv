@@ -8,11 +8,12 @@ predictor = dlib.shape_predictor(p)
 
 cap = cv2.VideoCapture(1)
 
+
 while True:
     _, image = cap.read()
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    print(face_utils.FACIAL_LANDMARKS_IDXS)
+    # print(face_utils.FACIAL_LANDMARKS_IDXS)
 
     rects = detector(gray, 0)
     arr = []
@@ -20,9 +21,18 @@ while True:
 
         shape = predictor(gray, rect)
         shape = face_utils.shape_to_np(shape)
-        #print(shape)
+        # print(shape)
         for (x, y) in shape:
             cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
+        
+        arr = shape[60:]
+    
+    if (len(arr) >= 8):
+        # print("in")
+        if (abs(arr[3][1] - arr[7][1]) < 10):
+            print("closed")
+        else:
+            print("opened")
     
     cv2.imshow("Output", image)
     
