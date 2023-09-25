@@ -11,6 +11,13 @@ cap = cv2.VideoCapture(1)
 cap.set(3, 640)
 cap.set(4, 480)
 
+def catch(myPoints, mouth, open):
+    if (mouth[1][0] + 10 >= myPoints[0][0] and mouth[5][0] - 10 <= myPoints[1][0]) and (myPoints[1][1] + 4 >= mouth[5][1] and myPoints[0][1] - 8 <= mouth[5][1]) and open:
+        print("caught")
+        return True 
+    return False
+
+
 def moveDown(myPoints):
     newP = list(myPoints)
     newP[0] = list(newP[0])
@@ -35,7 +42,7 @@ end_point = (255,25)
 myPoints = (start_point, end_point, "a")
 count = 0
 gummies = []
-
+open = False
 while True:
     _, image = cap.read()
 
@@ -55,11 +62,13 @@ while True:
         arr = shape[60:]
     
     if (len(arr) >= 8):
-        # print("in")
+        #print("in")
         if (abs(arr[3][1] - arr[7][1]) < 10):
-            print("closed")
+            open = False
+            # print("closed")
         else:
-            print("opened")
+            open = True
+            # print("opened")
     count += 1
     if (count % 40 == 0):
         myPoints = generateGummyBear()
@@ -69,7 +78,13 @@ while True:
     gummies2 = []
     for gummy in gummies:
         gummy = moveDown(gummy)
-        if gummy[0][1] <= 480:   
+        add = True
+        if (len(arr) >= 8):
+            # print("a")
+            caught = catch(gummy, arr, open)
+            if caught:
+                add = False
+        if gummy[0][1] <= 480 and add:   
             gummies2.append(gummy)
         cv2.rectangle(image, gummy[0], gummy[1], color, -1)
     
