@@ -1,12 +1,15 @@
 import cv2
 from imutils import face_utils
 import dlib
+import random
 
 p = "shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(p)
 
 cap = cv2.VideoCapture(1)
+cap.set(3, 640)
+cap.set(4, 480)
 
 def moveDown(myPoints):
     newP = list(myPoints)
@@ -19,9 +22,19 @@ def moveDown(myPoints):
     newP = tuple(newP)
     return newP
 
+def generateGummyBear():
+    spx = random.randrange(100, 520)
+    sp = (spx, 0)
+    ep = (spx + 20, 30)
+    jp = "a"
+    myPoints = (sp, ep, jp)
+    return myPoints
+
 start_point = (240,0)
 end_point = (255,25)
 myPoints = (start_point, end_point, "a")
+count = 0
+gummies = []
 
 while True:
     _, image = cap.read()
@@ -47,6 +60,21 @@ while True:
             print("closed")
         else:
             print("opened")
+    count += 1
+    if (count % 40 == 0):
+        myPoints = generateGummyBear()
+        gummies.append(myPoints)
+        color = (0, 0, 0)
+
+    gummies2 = []
+    for gummy in gummies:
+        gummy = moveDown(gummy)
+        if gummy[0][1] <= 480:   
+            gummies2.append(gummy)
+        cv2.rectangle(image, gummy[0], gummy[1], color, -1)
+    
+    gummies = gummies2
+
     myPoints = moveDown(myPoints)
     color = (0, 0, 0)
     cv2.rectangle(image, myPoints[0], myPoints[1], color, -1)
