@@ -8,6 +8,20 @@ predictor = dlib.shape_predictor(p)
 
 cap = cv2.VideoCapture(1)
 
+def moveDown(myPoints):
+    newP = list(myPoints)
+    newP[0] = list(newP[0])
+    newP[1] = list(newP[1])
+    newP[0][1] += 3
+    newP[1][1] += 3
+    newP[0] = tuple(newP[0])
+    newP[1] = tuple(newP[1])
+    newP = tuple(newP)
+    return newP
+
+start_point = (240,0)
+end_point = (255,25)
+myPoints = (start_point, end_point, "a")
 
 while True:
     _, image = cap.read()
@@ -33,7 +47,10 @@ while True:
             print("closed")
         else:
             print("opened")
-    
+    myPoints = moveDown(myPoints)
+    color = (0, 0, 0)
+    cv2.rectangle(image, myPoints[0], myPoints[1], color, -1)
+
     cv2.imshow("Output", image)
     
     if cv2.waitKey(1) & 0xFF == ord(' '):
